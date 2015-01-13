@@ -13,6 +13,7 @@
     <magnoliaVersion>5.3</magnoliaVersion>
     <javaVersion>1.6</javaVersion>
   </properties>
+  
 
   <dependencies>
     <dependency>
@@ -26,6 +27,18 @@
       <version>2.5</version>
       <scope>provided</scope>
     </dependency>
+    
+    <dependency>
+	    <groupId>doodledebug</groupId>
+	    <artifactId>doodledebug-library</artifactId>
+	    <version>2.0</version>
+	</dependency>
+    
+    <dependency>
+	    <groupId>org.apache.logging.log4j</groupId>
+	    <artifactId>log4j-jul</artifactId>
+	    <version>2.1</version>
+	</dependency>
 
     <!-- TEST -->
     <dependency>
@@ -68,6 +81,12 @@
   </build>
 
   <repositories>
+  <repository>
+    <id>in-project</id>
+    <name>In Project Repo</name>
+    <url>file://${project.basedir}/lib</url>
+  </repository>
+  
     <repository>
       <id>magnolia.public</id>
       <url>http://nexus.magnolia-cms.com/content/groups/public</url>
