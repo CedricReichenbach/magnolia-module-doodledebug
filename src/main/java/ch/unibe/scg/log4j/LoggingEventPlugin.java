@@ -1,4 +1,4 @@
-package ch.unibe.scg.doodle.magnolia.log4j;
+package ch.unibe.scg.log4j;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,8 +14,8 @@ import ch.unibe.scg.doodle.rendering.DoodleRenderException;
 
 public class LoggingEventPlugin extends AbstractPlugin {
 	
-	@Inject
-	Doodler doodler;
+//	@Inject
+//	Doodler doodler;
 
 	@Override
 	public Set<Class<?>> getDrawableClasses() {
@@ -27,14 +27,14 @@ public class LoggingEventPlugin extends AbstractPlugin {
 	@Override
 	public void render(Object object, Tag tag) throws DoodleRenderException {
 		LoggingEvent event = (LoggingEvent) object;
-		doodler.renderInlineInto(event.getMessage(), tag);
+//		doodler.renderInlineInto(event.getMessage(), tag);
 	}
 
 	@Override
 	public void renderSimplified(Object object, Tag tag)
 			throws DoodleRenderException {
 		LoggingEvent event = (LoggingEvent) object;
-		doodler.renderSmallInlineInto(event.getMessage(), tag);
+//		doodler.renderSmallInlineInto(event.getMessage(), tag);
 	}
 
 }
