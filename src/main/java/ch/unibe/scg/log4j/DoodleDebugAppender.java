@@ -10,7 +10,6 @@ public class DoodleDebugAppender extends AppenderSkeleton {
 
 	private static final String IN_APPEND_KEY = DoodleDebugAppender.class
 			.getName() + ".inAppend";
-	private static boolean ddLock = false;
 
 	public DoodleDebugAppender() {
 		super();
@@ -38,21 +37,13 @@ public class DoodleDebugAppender extends AppenderSkeleton {
 		MDC.put(IN_APPEND_KEY, this);
 
 		try {
-			// XXX: DD is not thread safe
-			 Runnable doodlingRunnable = new Runnable() {
+			Runnable doodlingRunnable = new Runnable() {
 				public void run() {
-					while (ddLock)
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-							return;
-						}
-					
-					ddLock = true;
-					// Doo.dle(event);
-					Doo.dle(event.getMessage());
-					ddLock = false;
+					// XXX: DD is not thread safe
+					synchronized (Doo.class) {
+						// Doo.dle(event);
+						Doo.dle(event.getMessage());
+					}
 				}
 			};
 			new Thread(doodlingRunnable).start();
