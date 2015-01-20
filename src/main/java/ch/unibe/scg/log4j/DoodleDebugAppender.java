@@ -1,10 +1,14 @@
 package ch.unibe.scg.log4j;
 
+import java.util.ArrayList;
+
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.MDC;
 import org.apache.log4j.spi.LoggingEvent;
 
 import ch.unibe.scg.doodle.Doo;
+import ch.unibe.scg.doodle.DoodleDebug;
+import ch.unibe.scg.doodle.plugins.RenderingPlugin;
 
 public class DoodleDebugAppender extends AppenderSkeleton {
 
@@ -14,10 +18,9 @@ public class DoodleDebugAppender extends AppenderSkeleton {
 	public DoodleDebugAppender() {
 		super();
 
-		// ArrayList<RenderingPlugin> plugins = new
-		// ArrayList<RenderingPlugin>();
-		// plugins.add(new LoggingEventPlugin());
-		// DoodleDebug.addRenderingPlugins(plugins);
+		ArrayList<RenderingPlugin> plugins = new ArrayList<RenderingPlugin>();
+		plugins.add(new LoggingEventPlugin());
+		DoodleDebug.addRenderingPlugins(plugins);
 	}
 
 	@Override
@@ -41,8 +44,8 @@ public class DoodleDebugAppender extends AppenderSkeleton {
 				public void run() {
 					// XXX: DD is not thread safe
 					synchronized (Doo.class) {
-						// Doo.dle(event);
-						Doo.dle(event.getMessage());
+						Doo.dle(event);
+						// Doo.dle(event.getMessage());
 					}
 				}
 			};
