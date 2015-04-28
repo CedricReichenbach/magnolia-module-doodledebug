@@ -10,8 +10,8 @@
   <description>Please uncomment and fill in ...</description>
   -->
   <properties>
-    <magnoliaVersion>5.3</magnoliaVersion>
-    <javaVersion>1.6</javaVersion>
+    <magnoliaVersion>5.3.8</magnoliaVersion>
+    <javaVersion>1.7</javaVersion>
   </properties>
   
 
