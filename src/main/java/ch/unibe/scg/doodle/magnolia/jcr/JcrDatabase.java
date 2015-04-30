@@ -64,8 +64,11 @@ public class JcrDatabase<T> extends DoodleDatabaseMap<T> {
 	public T get(Object key) {
 		if (!(key instanceof String))
 			return null;
-		Property property = PropertyUtil.getPropertyOrNull(node, (String) key);
 		try {
+			if (!node.hasProperty((String) key))
+				return null;
+			Property property = PropertyUtil.getPropertyOrNull(node,
+					(String) key);
 			return (T) xstream.fromXML(property.getValue().getString());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
