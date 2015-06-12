@@ -1,7 +1,10 @@
 package ch.unibe.scg.doodle.magnolia.jcr;
 
 import info.magnolia.context.MgnlContext;
+import info.magnolia.context.SimpleContext;
+import info.magnolia.context.SystemContext;
 import info.magnolia.jcr.util.PropertyUtil;
+import info.magnolia.objectfactory.Components;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,9 +46,19 @@ public class JcrDatabase<T> extends DoodleDatabaseMap<T> {
 			RepositoryException {
 		super(mapName);
 
+		assureMgnlContext();
+
 		Session session = MgnlContext.getJCRSession(WORKSPACE);
 		node = JcrUtils.getOrCreateByPath(PATH_PREFIX + mapName, NODE_TYPE,
 				session);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void assureMgnlContext() {
+		// XXX: Correct? Release at some point?
+		if (!MgnlContext.hasInstance())
+			MgnlContext.setInstance(new SimpleContext(Components
+					.getComponent(SystemContext.class)));
 	}
 
 	@Override

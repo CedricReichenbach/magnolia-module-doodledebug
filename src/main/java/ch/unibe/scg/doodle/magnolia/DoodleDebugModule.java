@@ -1,13 +1,14 @@
 package ch.unibe.scg.doodle.magnolia;
 
+import info.magnolia.module.ModuleLifecycle;
+import info.magnolia.module.ModuleLifecycleContext;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.unibe.scg.doodle.DoodleDebug;
 import ch.unibe.scg.doodle.DoodleDebugWebapp;
 import ch.unibe.scg.doodle.magnolia.jcr.JcrDatabase;
-import info.magnolia.module.ModuleLifecycle;
-import info.magnolia.module.ModuleLifecycleContext;
 
 /**
  * This class is optional and represents the configuration for the doodledebug
@@ -26,7 +27,7 @@ public class DoodleDebugModule implements ModuleLifecycle {
 	@Override
 	public void start(ModuleLifecycleContext ctx) {
 		DoodleDebug.setDatabaseMap(JcrDatabase.class);
-		
+
 		log.info("Starting DoodleDebugWebapp server...");
 		try {
 			DoodleDebugWebapp.startServer(PORT);
@@ -37,7 +38,11 @@ public class DoodleDebugModule implements ModuleLifecycle {
 
 	@Override
 	public void stop(ModuleLifecycleContext ctx) {
-		// XXX: Stop server?
+		try {
+			DoodleDebugWebapp.stopServer();
+		} catch (Exception e) {
+			log.error("Failed to stop DoodleDebug webapp server", e);
+		}
 	}
 
 }

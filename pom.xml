@@ -28,11 +28,6 @@
       <scope>provided</scope>
     </dependency>
     
-    <dependency>
-	    <groupId>doodledebug</groupId>
-	    <artifactId>doodledebug-library</artifactId>
-	    <version>2.0</version>
-	</dependency>
     
     <dependency>
 	    <groupId>org.apache.logging.log4j</groupId>
@@ -47,6 +42,19 @@
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
+    
+    <dependency>
+	  <groupId>doodledebug</groupId>
+	  <artifactId>doodledebug-library</artifactId>
+	  <version>2.0</version>
+	</dependency>
+	
+	<dependency>
+		<groupId>com.thoughtworks.xstream</groupId>
+		<artifactId>xstream</artifactId>
+		<version>1.4.5</version>
+		<scope>provided</scope>
+	</dependency>
   </dependencies>
 
   <build>
