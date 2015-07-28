@@ -66,6 +66,7 @@ public class JcrDatabase<T> extends DoodleDatabaseMap<T> {
 			InvalidItemStateException, VersionException, LockException,
 			NoSuchNodeTypeException, RepositoryException {
 		// TODO: Make this async, and "cache" (for performance)
+		// Save is expensive especially for nodes with many/big properties
 		node.getSession().save(); // XXX: Expensive!
 	}
 
