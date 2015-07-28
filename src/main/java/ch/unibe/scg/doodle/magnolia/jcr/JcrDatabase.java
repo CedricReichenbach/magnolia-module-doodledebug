@@ -11,12 +11,20 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.jcr.AccessDeniedException;
+import javax.jcr.InvalidItemStateException;
+import javax.jcr.ItemExistsException;
 import javax.jcr.LoginException;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
+import javax.jcr.ReferentialIntegrityException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
+import javax.jcr.nodetype.NoSuchNodeTypeException;
+import javax.jcr.version.VersionException;
 
 import org.apache.jackrabbit.commons.JcrUtils;
 
@@ -51,6 +59,14 @@ public class JcrDatabase<T> extends DoodleDatabaseMap<T> {
 		Session session = MgnlContext.getJCRSession(WORKSPACE);
 		node = JcrUtils.getOrCreateByPath(PATH_PREFIX + mapName, NODE_TYPE,
 				session);
+	}
+
+	private void saveNode() throws AccessDeniedException, ItemExistsException,
+			ReferentialIntegrityException, ConstraintViolationException,
+			InvalidItemStateException, VersionException, LockException,
+			NoSuchNodeTypeException, RepositoryException {
+		// TODO: Make this async, and "cache" (for performance)
+		node.getSession().save(); // XXX: Expensive!
 	}
 
 	@SuppressWarnings("unchecked")
@@ -115,7 +131,7 @@ public class JcrDatabase<T> extends DoodleDatabaseMap<T> {
 
 		try {
 			node.setProperty(key, xstream.toXML(value));
-			node.getSession().save();
+			saveNode();
 		} catch (RepositoryException e) {
 			throw new RuntimeException(e);
 		}
@@ -131,7 +147,7 @@ public class JcrDatabase<T> extends DoodleDatabaseMap<T> {
 			if (key instanceof String && !node.hasProperty((String) key))
 				return null;
 			node.getProperty((String) key).remove();
-			node.getSession().save();
+			saveNode();
 		} catch (RepositoryException e) {
 			throw new RuntimeException(e);
 		}
