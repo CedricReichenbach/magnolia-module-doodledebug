@@ -3,6 +3,7 @@ package ch.unibe.scg.doodle.magnolia.jcr;
 import info.magnolia.context.MgnlContext;
 import info.magnolia.context.SimpleContext;
 import info.magnolia.context.SystemContext;
+import info.magnolia.jcr.util.NodeUtil;
 import info.magnolia.jcr.util.PropertyUtil;
 import info.magnolia.objectfactory.Components;
 
@@ -16,8 +17,8 @@ import javax.jcr.InvalidItemStateException;
 import javax.jcr.ItemExistsException;
 import javax.jcr.LoginException;
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
 import javax.jcr.ReferentialIntegrityException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -61,10 +62,11 @@ public class JcrDatabase<T> extends DoodleDatabaseMap<T> {
 				session);
 	}
 
-	private void saveNode() throws AccessDeniedException, ItemExistsException,
-			ReferentialIntegrityException, ConstraintViolationException,
-			InvalidItemStateException, VersionException, LockException,
-			NoSuchNodeTypeException, RepositoryException {
+	private void saveSession() throws AccessDeniedException,
+			ItemExistsException, ReferentialIntegrityException,
+			ConstraintViolationException, InvalidItemStateException,
+			VersionException, LockException, NoSuchNodeTypeException,
+			RepositoryException {
 		// TODO: Make this async, and "cache" (for performance)
 		// Save is expensive especially for nodes with many/big properties
 		node.getSession().save(); // XXX: Expensive!
@@ -95,9 +97,12 @@ public class JcrDatabase<T> extends DoodleDatabaseMap<T> {
 		if (!(key instanceof String))
 			return null;
 		try {
-			if (!node.hasProperty((String) key))
+			if (!node.hasNode((String) key))
 				return null;
-			Property property = PropertyUtil.getPropertyOrNull(node,
+			Node subNode = node.getNode((String) key);
+			if (!subNode.hasProperty((String) key))
+				return null;
+			Property property = PropertyUtil.getPropertyOrNull(subNode,
 					(String) key);
 			return (T) xstream.fromXML(property.getValue().getString());
 		} catch (Exception e) {
@@ -107,9 +112,9 @@ public class JcrDatabase<T> extends DoodleDatabaseMap<T> {
 
 	@Override
 	public Set<String> keySet() {
-		PropertyIterator iterator;
+		NodeIterator iterator;
 		try {
-			iterator = node.getProperties();
+			iterator = node.getNodes();
 		} catch (RepositoryException e1) {
 			throw new RuntimeException();
 		}
@@ -117,7 +122,7 @@ public class JcrDatabase<T> extends DoodleDatabaseMap<T> {
 		Set<String> result = new HashSet<String>();
 		while (iterator.hasNext()) {
 			try {
-				result.add(iterator.nextProperty().getName());
+				result.add(iterator.nextNode().getName());
 			} catch (RepositoryException e) {
 				e.printStackTrace();
 			}
@@ -131,8 +136,10 @@ public class JcrDatabase<T> extends DoodleDatabaseMap<T> {
 		T previous = this.get(key);
 
 		try {
-			node.setProperty(key, xstream.toXML(value));
-			saveNode();
+			Node subNode = NodeUtil.createPath(node, key, NODE_TYPE);
+			subNode.setProperty(key, xstream.toXML(value));
+
+			saveSession();
 		} catch (RepositoryException e) {
 			throw new RuntimeException(e);
 		}
@@ -145,10 +152,12 @@ public class JcrDatabase<T> extends DoodleDatabaseMap<T> {
 		T previous = this.get(key);
 
 		try {
-			if (key instanceof String && !node.hasProperty((String) key))
+			if (key instanceof String && !node.hasNode((String) key))
 				return null;
-			node.getProperty((String) key).remove();
-			saveNode();
+
+			node.getNode((String) key).remove();
+
+			saveSession();
 		} catch (RepositoryException e) {
 			throw new RuntimeException(e);
 		}
